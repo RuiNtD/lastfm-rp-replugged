@@ -32,9 +32,13 @@ const logger = Logger.plugin("Last.fm RP", "#ba0000");
 async function runTimer(): Promise<void> {
   logger.log("Timer!");
 
-  const activity = (await getActivity()) || null;
-  logger.log("Received activity", activity);
-  setActivity(activity);
+  try {
+    const activity = (await getActivity()) || null;
+    logger.log("Received activity", activity);
+    setActivity(activity);
+  } catch (e) {
+    logger.error("Error getting activity", e);
+  }
 }
 
 function hasOtherActivity(): boolean {
