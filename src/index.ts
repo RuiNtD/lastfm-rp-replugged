@@ -1,23 +1,24 @@
 import { Logger, common, webpack } from "replugged";
-import { clientID, OtherAppIDs } from "./constants";
-import { Activity, ActivityButton, ActivityFlags, ActivityType } from "./types";
-import { getLastTrack, getUser, LastFMTrack } from "./lastFm";
+import { CLIENT_ID, OTHER_APP_IDS } from "./constants";
+import { Activity, ActivityAssets, ActivityButton, ActivityFlags, ActivityType } from "./types";
+import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
 
 const getActivities = (await webpack.waitForProps("getActivities"))
   .getActivities as () => Activity[];
 
-const getAsset = webpack.getFunctionBySource(
-  await webpack.waitForModule(
-    webpack.filters.bySource("getAssetImage: size must === [number, number] for Twitch"),
-  ),
-  "apply(",
-) as (clientID: string, key: [string]) => Promise<[string]>;
+const getAsset: (clientID: string, key: [string]) => Promise<[string]> =
+  webpack.getFunctionBySource(
+    await webpack.waitForModule(
+      webpack.filters.bySource("getAssetImage: size must === [number, number] for Twitch"),
+    ),
+    "apply(",
+  )!;
 
 async function getAppAsset(key: string): Promise<string> {
-  return (await getAsset(clientID, [key]))[0];
+  return (await getAsset(CLIENT_ID, [key]))[0];
 }
 
-function setActivity(activity: Activity | null) {
+function setActivity(activity: Activity | null): void {
   common.fluxDispatcher.dispatch({
     type: "LOCAL_ACTIVITY_UPDATE",
     activity,
@@ -27,7 +28,7 @@ function setActivity(activity: Activity | null) {
 
 const logger = Logger.plugin("Last.fm RP", "#ba0000");
 
-async function runTimer() {
+async function runTimer(): Promise<void> {
   logger.log("Timer!");
 
   const activity = (await getActivity()) || null;
@@ -37,6 +38,7 @@ async function runTimer() {
 
 function hasOtherActivity(): boolean {
   // TODO: Add setting
+  // eslint-disable-next-line no-constant-condition
   if (false) return false;
 
   const activities = getActivities();
@@ -44,11 +46,11 @@ function hasOtherActivity(): boolean {
 
   for (const activity of activities) {
     const appID = activity.application_id;
-    if (appID == clientID) continue;
+    if (appID == CLIENT_ID) continue;
     if (activity.type == 2) return true;
     if (!appID) continue;
 
-    if (OtherAppIDs.includes(appID)) return true;
+    if (OTHER_APP_IDS.includes(appID)) return true;
   }
 
   return false;
@@ -81,9 +83,17 @@ async function getActivity(): Promise<Activity | undefined> {
   }
 
   const buttons: ActivityButton[] = [];
-  let small_image = "lastfm";
-  let small_text = "Scrobbling now";
+  const assets: ActivityAssets = {
+    /* eslint-disable @typescript-eslint/naming-convention */
+    large_image: track.image[track.image.length - 1]["#text"] || "placeholdersong",
+    large_text: track.album["#text"],
+    small_image: "lastfm",
+    small_text: "Scrobbling now",
+    /* eslint-enable @typescript-eslint/naming-convention */
+  };
 
+  // TODO: Add setting
+  // eslint-disable-next-line no-constant-condition
   if (true) {
     try {
       const user = await getUser("RuiNtD");
@@ -91,22 +101,25 @@ async function getActivity(): Promise<Activity | undefined> {
         label: "Last.fm Profile",
         url: user.url,
       });
-      small_text += ` as ${user.name}`;
+      assets.small_text += ` as ${user.name}`;
 
-      small_image = user.image[user.image.length - 1]["#text"] || "lastfm";
+      assets.small_image = user.image[user.image.length - 1]["#text"] || "lastfm";
     } catch {}
   }
 
-  small_text += " on Last.fm";
+  assets.small_text += " on Last.fm";
   buttons.push({
     label: "View Song",
     url: track.url,
   });
 
-  const large_image = track.image[track.image.length - 1]["#text"] || "placeholdersong";
+  if (assets.large_image) assets.large_image = await getAppAsset(assets.large_image);
+  if (assets.small_image) assets.small_image = await getAppAsset(assets.small_image);
+
+  /* eslint-disable @typescript-eslint/naming-convention */
   return {
     name: "Music",
-    application_id: clientID,
+    application_id: CLIENT_ID,
 
     type: ActivityType.Listening,
     flags: ActivityFlags.Instance,
@@ -114,12 +127,7 @@ async function getActivity(): Promise<Activity | undefined> {
     details: track.name,
     state: track.artist["#text"] ? `by ${track.artist["#text"]}` : "",
 
-    assets: {
-      large_image: await getAppAsset(large_image),
-      large_text: track.album["#text"],
-      small_image: await getAppAsset(small_image),
-      small_text,
-    },
+    assets,
 
     timestamps: {
       start: track.date?.uts,
@@ -130,11 +138,12 @@ async function getActivity(): Promise<Activity | undefined> {
       button_urls: buttons.map((v) => v.url),
     },
   };
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 let timer: NodeJS.Timer;
 export async function start(): Promise<void> {
-  runTimer();
+  await runTimer();
   timer = setInterval(runTimer, 10_000);
 }
 

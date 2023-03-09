@@ -1,8 +1,8 @@
-export const clientID = "740140397162135563";
-export const lastFmKey = "3b64424cee4803202edd52b060297958";
-export const lastFmUserAgent = "https://github.com/RuiNtD/lastfm-rp-replugged";
+export const CLIENT_ID = "740140397162135563";
+export const LASTFM_KEY = "3b64424cee4803202edd52b060297958";
+export const LASTFM_UA = "https://github.com/RuiNtD/lastfm-rp-replugged";
 
-export const OtherAppIDs = [
+export const OTHER_APP_IDS = [
   // Cider
   "911790844204437504", // Cider
   "886578863147192350", // Apple Music

@@ -1,19 +1,29 @@
 import { z } from "zod";
-import { lastFmKey } from "./constants.js";
+import { LASTFM_KEY } from "./constants.js";
 
 const baseURL = "https://ws.audioscrobbler.com/2.0/?";
 
 export const LastFMError = z.object({ error: z.number(), message: z.string() });
 export type LastFMError = z.infer<typeof LastFMError>;
 
-function image(size: string) {
-  return z.object({
-    size: z.literal(size),
+const images = z.tuple([
+  z.object({
+    size: z.literal("small"),
     "#text": z.literal("").or(z.string().url()),
-  });
-}
-
-const images = z.tuple([image("small"), image("medium"), image("large"), image("extralarge")]);
+  }),
+  z.object({
+    size: z.literal("medium"),
+    "#text": z.literal("").or(z.string().url()),
+  }),
+  z.object({
+    size: z.literal("large"),
+    "#text": z.literal("").or(z.string().url()),
+  }),
+  z.object({
+    size: z.literal("extralarge"),
+    "#text": z.literal("").or(z.string().url()),
+  }),
+]);
 
 export const LastFMTrack = z.object({
   artist: z.object({
@@ -52,13 +62,14 @@ export type LastFMTracks = z.infer<typeof LastFMTracks>;
 export async function getLastTrack(username: string): Promise<LastFMTrack> {
   const params = new URLSearchParams({
     method: "user.getrecenttracks",
-    api_key: lastFmKey,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    api_key: LASTFM_KEY,
     format: "json",
     user: username,
     // limit: "1",
   });
 
-  const json = await (await fetch(baseURL + params)).json();
+  const json = await (await fetch(`${baseURL}${params}`)).json();
 
   const error = LastFMError.safeParse(json);
   if (error.success) throw new Error(`Error ${error.data.error}: ${error.data.message}`);
@@ -81,12 +92,13 @@ const LastAPIUser = z.object({ user: LastFMUser });
 export async function getUser(username: string): Promise<LastFMUser> {
   const params = new URLSearchParams({
     method: "user.getinfo",
-    api_key: lastFmKey,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    api_key: LASTFM_KEY,
     format: "json",
     user: username,
   });
 
-  const json = await (await fetch(baseURL + params)).json();
+  const json = await (await fetch(`${baseURL}${params}`)).json();
 
   const error = LastFMError.safeParse(json);
   if (error.success) throw new Error(`Error ${error.data.error}: ${error.data.message}`);
