@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { LASTFM_KEY } from "./constants.js";
+import { cfg } from "./config";
+import { LASTFM_KEY, LASTFM_UA } from "./constants";
 
 const baseURL = "https://ws.audioscrobbler.com/2.0/?";
 
@@ -59,22 +60,40 @@ export const LastFMTracks = z.object({
 });
 export type LastFMTracks = z.infer<typeof LastFMTracks>;
 
-export async function getLastTrack(username: string): Promise<LastFMTrack> {
-  const params = new URLSearchParams({
-    method: "user.getrecenttracks",
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    api_key: LASTFM_KEY,
-    format: "json",
-    user: username,
-    // limit: "1",
+async function sendRequest(params: Record<string, string>): Promise<unknown> {
+  const headers = new Headers({
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "User-Agent": LASTFM_UA,
   });
 
-  const json = await (await fetch(`${baseURL}${params}`)).json();
+  const newParams = new URLSearchParams({
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    api_key: cfg.get("lastFMKey") || LASTFM_KEY,
+    format: "json",
+    ...params,
+  });
+
+  const req = await fetch(`${baseURL}${newParams}`, {
+    headers,
+  });
+  const json = await req.json();
 
   const error = LastFMError.safeParse(json);
   if (error.success) throw new Error(`Error ${error.data.error}: ${error.data.message}`);
 
-  return LastFMTracks.parse(json).recenttracks.track[0];
+  return json;
+}
+
+export async function getLastTrack(user: string): Promise<LastFMTrack> {
+  const tracks = await sendRequest({
+    method: "user.getrecenttracks",
+    user,
+    // TODO: Commented to test zod
+    // limit: "1",
+  });
+
+  return LastFMTracks.parse(tracks).recenttracks.track[0];
 }
 
 const LastFMUser = z.object({
@@ -89,22 +108,11 @@ export type LastFMUser = z.infer<typeof LastFMUser>;
 
 const LastAPIUser = z.object({ user: LastFMUser });
 
-export async function getUser(username: string): Promise<LastFMUser> {
-  const params = new URLSearchParams({
+export async function getUser(user: string): Promise<LastFMUser> {
+  const info = await sendRequest({
     method: "user.getinfo",
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    api_key: LASTFM_KEY,
-    format: "json",
-    user: username,
+    user,
   });
 
-  const json = await (await fetch(`${baseURL}${params}`)).json();
-
-  const error = LastFMError.safeParse(json);
-  if (error.success) throw new Error(`Error ${error.data.error}: ${error.data.message}`);
-
-  return LastAPIUser.parse(json).user;
+  return LastAPIUser.parse(info).user;
 }
-
-// console.log(await getLastTrack("RuiNtD"));
-// console.log(await getUser("RuiNtD"));

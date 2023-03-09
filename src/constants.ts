@@ -14,6 +14,6 @@ export const OTHER_APP_IDS = [
   "383816327850360843", // iTunes
   "529435150472183819", // Apple Music
 
-  // Apple Music PreMiD
   "842112189618978897", // Apple Music PreMiD
+  "1066220978406953012", // AMWin-RichPresence
 ];

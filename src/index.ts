@@ -2,6 +2,7 @@ import { Logger, common, webpack } from "replugged";
 import { CLIENT_ID, OTHER_APP_IDS } from "./constants";
 import { Activity, ActivityAssets, ActivityButton, ActivityFlags, ActivityType } from "./types";
 import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
+import { cfg } from "./config";
 
 const getActivities = (await webpack.waitForProps("getActivities"))
   .getActivities as () => Activity[];
@@ -37,9 +38,7 @@ async function runTimer(): Promise<void> {
 }
 
 function hasOtherActivity(): boolean {
-  // TODO: Add setting
-  // eslint-disable-next-line no-constant-condition
-  if (false) return false;
+  if (!cfg.get("ignoreIfOtherApps")) return false;
 
   const activities = getActivities();
   if (!activities) return false;
@@ -57,6 +56,12 @@ function hasOtherActivity(): boolean {
 }
 
 async function getActivity(): Promise<Activity | undefined> {
+  const username = cfg.get("username");
+  if (!username) {
+    logger.log("Username not set");
+    return;
+  }
+
   if (hasOtherActivity()) {
     logger.log("Found other activity. Cancelling.");
     return;
@@ -64,8 +69,7 @@ async function getActivity(): Promise<Activity | undefined> {
 
   let track: LastFMTrack;
   try {
-    // TODO: Add setting
-    track = await getLastTrack("RuiNtD");
+    track = await getLastTrack(username);
   } catch (e) {
     logger.error("Failed to get last track");
     logger.error(e);
@@ -92,11 +96,9 @@ async function getActivity(): Promise<Activity | undefined> {
     /* eslint-enable @typescript-eslint/naming-convention */
   };
 
-  // TODO: Add setting
-  // eslint-disable-next-line no-constant-condition
-  if (true) {
+  if (cfg.get("shareUsername")) {
     try {
-      const user = await getUser("RuiNtD");
+      const user = await getUser(username);
       buttons.push({
         label: "Last.fm Profile",
         url: user.url,
@@ -118,8 +120,8 @@ async function getActivity(): Promise<Activity | undefined> {
 
   /* eslint-disable @typescript-eslint/naming-convention */
   return {
-    name: "Music",
-    application_id: CLIENT_ID,
+    name: cfg.get("appName") || "Music",
+    application_id: cfg.get("clientID") || CLIENT_ID,
 
     type: ActivityType.Listening,
     flags: ActivityFlags.Instance,
@@ -150,3 +152,5 @@ export async function start(): Promise<void> {
 export function stop(): void {
   clearInterval(timer);
 }
+
+export { Settings } from "./Settings";
