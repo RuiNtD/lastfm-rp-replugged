@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { cfg } from "./config";
-import { LASTFM_KEY, LASTFM_UA } from "./constants";
+import { getLastFMKey } from "./config";
+import { LASTFM_UA } from "./constants";
 
 const baseURL = "https://ws.audioscrobbler.com/2.0/?";
 
@@ -69,7 +69,7 @@ async function sendRequest(params: Record<string, string>): Promise<unknown> {
 
   const newParams = new URLSearchParams({
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    api_key: cfg.get("lastFMKey") || LASTFM_KEY,
+    api_key: getLastFMKey(),
     format: "json",
     ...params,
   });

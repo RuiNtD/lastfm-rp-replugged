@@ -1,8 +1,8 @@
 import { Logger, common, webpack } from "replugged";
-import { CLIENT_ID, OTHER_APP_IDS } from "./constants";
+import { OTHER_APP_IDS } from "./constants";
 import { Activity, ActivityAssets, ActivityButton, ActivityFlags, ActivityType } from "./types";
 import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
-import { cfg } from "./config";
+import { cfg, getClientID } from "./config";
 
 const getActivities = (await webpack.waitForProps("getActivities"))
   .getActivities as () => Activity[];
@@ -16,7 +16,7 @@ const getAsset: (clientID: string, key: [string]) => Promise<[string]> =
   )!;
 
 async function getAppAsset(key: string): Promise<string> {
-  return (await getAsset(CLIENT_ID, [key]))[0];
+  return (await getAsset(getClientID(), [key]))[0];
 }
 
 function setActivity(activity: Activity | null): void {
@@ -49,7 +49,7 @@ function hasOtherActivity(): boolean {
 
   for (const activity of activities) {
     const appID = activity.application_id;
-    if (appID == CLIENT_ID) continue;
+    if (appID == getClientID()) continue;
     if (activity.type == 2) return true;
     if (!appID) continue;
 
@@ -125,7 +125,7 @@ async function getActivity(): Promise<Activity | undefined> {
   /* eslint-disable @typescript-eslint/naming-convention */
   return {
     name: cfg.get("appName") || "Music",
-    application_id: cfg.get("clientID") || CLIENT_ID,
+    application_id: getClientID(),
 
     type: ActivityType.Listening,
     flags: ActivityFlags.Instance,
