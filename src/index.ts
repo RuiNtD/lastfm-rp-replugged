@@ -56,7 +56,7 @@ function hasOtherActivity(): boolean {
 
 async function getActivity(): Promise<Activity | undefined> {
   if (hasOtherActivity()) {
-    logger.warn("Found other activity. Cancelling.");
+    logger.log("Found other activity. Cancelling.");
     return;
   }
 
@@ -71,12 +71,12 @@ async function getActivity(): Promise<Activity | undefined> {
   }
 
   if (!track) {
-    logger.warn("No tracks found?");
+    logger.log("No tracks found?");
     return;
   }
 
   if (!track["@attr"]?.nowplaying) {
-    logger.warn("Nothing playing!");
+    logger.log("Nothing playing!");
     return;
   }
 
