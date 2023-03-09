@@ -1,16 +1,16 @@
 {
-  "id": "dev.replugged.PluginTemplate",
-  "name": "Plugin Template",
-  "description": "A plugin template",
+  "id": "io.github.ruintd.LastFMRP",
+  "name": "Last.fm Rich Presence",
+  "description": "The Last music rich presence app you'll ever need",
   "author": {
-    "name": "replugged",
-    "discordID": "1000992611840049192",
-    "github": "replugged-org"
+    "name": "RuiNtD",
+    "discordID": "157917665162297344",
+    "github": "RuiNtD"
   },
   "version": "1.0.0",
   "updater": {
     "type": "github",
-    "id": "replugged-org/plugin-template"
+    "id": "RuiNtD/lastfm-rp-replugged"
   },
   "license": "MIT",
   "type": "replugged-plugin",

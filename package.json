@@ -1,7 +1,8 @@
 {
-  "name": "plugin-template",
+  "type": "module",
+  "name": "lastfm-rp-replugged",
   "version": "1.0.0",
-  "description": "A plugin template",
+  "description": "The Last music rich presence app you'll ever need",
   "engines": {
     "node": ">=14.0.0"
   },
@@ -18,8 +19,8 @@
     "lint:fix": "pnpm run prettier:fix && pnpm run eslint:fix"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "RuiNtD",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.11.2",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
@@ -31,5 +32,9 @@
     "prettier": "^2.8.1",
     "replugged": "4.0.0",
     "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "discord-api-types": "^0.37.35",
+    "zod": "^3.21.4"
   }
 }
