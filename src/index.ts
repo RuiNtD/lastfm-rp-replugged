@@ -3,21 +3,10 @@ import { OTHER_APP_IDS } from "./constants";
 import { Activity, ActivityAssets, ActivityButton, ActivityFlags, ActivityType } from "./types";
 import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
 import { cfg, getClientID } from "./config";
+import { getAppAsset } from "./assetProvider";
 
 const getActivities = (await webpack.waitForProps("getActivities"))
   .getActivities as () => Activity[];
-
-const getAsset: (clientID: string, key: [string]) => Promise<[string]> =
-  webpack.getFunctionBySource(
-    await webpack.waitForModule(
-      webpack.filters.bySource("getAssetImage: size must === [number, number] for Twitch"),
-    ),
-    "apply(",
-  )!;
-
-async function getAppAsset(key: string): Promise<string> {
-  return (await getAsset(getClientID(), [key]))[0];
-}
 
 function setActivity(activity: Activity | null): void {
   common.fluxDispatcher.dispatch({
