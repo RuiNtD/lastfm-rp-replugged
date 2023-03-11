@@ -89,8 +89,7 @@ export async function getLastTrack(user: string): Promise<LastFMTrack> {
   const tracks = await sendRequest({
     method: "user.getrecenttracks",
     user,
-    // TODO: Commented to test zod
-    // limit: "1",
+    limit: "1",
   });
 
   return LastFMTracks.parse(tracks).recenttracks.track[0];
