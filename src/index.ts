@@ -17,6 +17,7 @@ function setActivity(activity: Activity | null): void {
 }
 
 const logger = Logger.plugin("Last.fm RP", "#ba0000");
+let timer: NodeJS.Timer | null;
 
 async function runTimer(): Promise<void> {
   logger.log("Timer!");
@@ -24,7 +25,9 @@ async function runTimer(): Promise<void> {
   try {
     const activity = (await getActivity()) || null;
     logger.log("Received activity", activity);
-    setActivity(activity);
+    if (timer)
+      // Fixes any async weirdness when disabling
+      setActivity(activity);
   } catch (e) {
     logger.error("Error getting activity", e);
   }
@@ -136,14 +139,15 @@ async function getActivity(): Promise<Activity | undefined> {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-let timer: NodeJS.Timer;
 export async function start(): Promise<void> {
-  await runTimer();
   timer = setInterval(runTimer, 10_000);
+  await runTimer();
 }
 
 export function stop(): void {
-  clearInterval(timer);
+  if (timer) clearInterval(timer);
+  timer = null;
+  setActivity(null);
 }
 
 export { Settings } from "./Settings";
