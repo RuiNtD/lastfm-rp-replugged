@@ -7,10 +7,10 @@
     "discordID": "157917665162297344",
     "github": "RuiNtD"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "updater": {
-    "type": "github",
-    "id": "RuiNtD/lastfm-rp-replugged"
+    "type": "store",
+    "id": "io.github.ruintd.LastFMRP"
   },
   "license": "MIT",
   "type": "replugged-plugin",
