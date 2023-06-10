@@ -36,3 +36,4 @@ jobs:
           artifacts: "bundle/*"
           makeLatest: true
           allowUpdates: true
+          omitBodyDuringUpdate: true
