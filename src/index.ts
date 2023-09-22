@@ -52,6 +52,13 @@ function hasOtherActivity(): boolean {
   return false;
 }
 
+function templateText(txt: string, track: LastFMTrack): string {
+  return txt
+    .replaceAll("{title}", track.name)
+    .replaceAll("{artist}", track.artist["#text"])
+    .replaceAll("{album}", track.album["#text"]);
+}
+
 async function getActivity(): Promise<Activity | undefined> {
   const username = cfg.get("username");
   if (!username) {
@@ -115,20 +122,9 @@ async function getActivity(): Promise<Activity | undefined> {
   if (assets.large_image) assets.large_image = await getAppAsset(assets.large_image);
   if (assets.small_image) assets.small_image = await getAppAsset(assets.small_image);
 
-  let appName = cfg.get("appName") || "Music";
-  appName = appName.replace(/{[a-zA-Z0-9]+}/g, function (match) {
-    return match === "{title}"
-      ? track.name
-      : match === "{artist}"
-      ? track.artist["#text"]
-      : match === "{album}"
-      ? track.album["#text"]
-      : match;
-  });
-
   /* eslint-disable @typescript-eslint/naming-convention */
   return {
-    name: appName,
+    name: templateText(cfg.get("appName") || "Music", track),
     application_id: getClientID(),
 
     type: ActivityType.Listening,
