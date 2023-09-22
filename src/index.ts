@@ -115,11 +115,14 @@ async function getActivity(): Promise<Activity | undefined> {
   if (assets.small_image) assets.small_image = await getAppAsset(assets.small_image);
 
   let appName = cfg.get("appName") || "Music";
-  appName = appName.replace(/{[a-zA-Z0-9]+}/g, function(match) {
-    return match === "{title}" ? track.name :
-      match === "{artist}" ? track.artist["#text"] :
-      match === "{album}" ? track.album["#text"] :
-      match;
+  appName = appName.replace(/{[a-zA-Z0-9]+}/g, function (match) {
+    return match === "{title}"
+      ? track.name
+      : match === "{artist}"
+      ? track.artist["#text"]
+      : match === "{album}"
+      ? track.album["#text"]
+      : match;
   });
 
   /* eslint-disable @typescript-eslint/naming-convention */

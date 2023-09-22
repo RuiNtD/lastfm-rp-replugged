@@ -15,9 +15,9 @@ export function Settings(): React.ReactElement {
       <Text.Eyebrow style={{ marginBottom: "5px" }}>App Name</Text.Eyebrow>
       <TextInput {...util.useSetting(cfg, "appName")} placeholder="Music" />
       <FormText.DESCRIPTION style={{ marginTop: "8px" }}>
-        "{"{title}"}" is replaced with current track name<br/>
-        "{"{artist}"}" is replaced with current track artist<br/>
-        "{"{album}"}" is replaced with current track album name
+        "{"{title}"}" is replaced with current track name
+        <br />"{"{artist}"}" is replaced with current track artist
+        <br />"{"{album}"}" is replaced with current track album name
       </FormText.DESCRIPTION>
       <Divider style={{ marginTop: "10px", marginBottom: "20px" }} />
 
