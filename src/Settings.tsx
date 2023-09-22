@@ -3,7 +3,7 @@ import { cfg } from "./config";
 import { CLIENT_ID, LASTFM_KEY } from "./constants";
 
 const { React } = common;
-const { Divider, Text, TextInput, SwitchItem } = components;
+const { Divider, Text, TextInput, SwitchItem, FormText } = components;
 
 export function Settings(): React.ReactElement {
   return (
@@ -14,7 +14,12 @@ export function Settings(): React.ReactElement {
 
       <Text.Eyebrow style={{ marginBottom: "5px" }}>App Name</Text.Eyebrow>
       <TextInput {...util.useSetting(cfg, "appName")} placeholder="Music" />
-      <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
+      <FormText.DESCRIPTION style={{ marginTop: "8px" }}>
+        "{"{title}"}" is replaced with current track name<br/>
+        "{"{artist}"}" is replaced with current track artist<br/>
+        "{"{album}"}" is replaced with current track album name
+      </FormText.DESCRIPTION>
+      <Divider style={{ marginTop: "10px", marginBottom: "20px" }} />
 
       <SwitchItem
         {...util.useSetting(cfg, "shareUsername")}
