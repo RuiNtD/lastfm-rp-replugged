@@ -5,8 +5,9 @@ import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
 import { cfg, getClientID } from "./config";
 import { getAppAsset } from "./assetProvider";
 
-const getActivities = (await webpack.waitForProps("getActivities"))
-  .getActivities as () => Activity[];
+const { getActivities } = await webpack.waitForProps<{ getActivities: () => Activity[] }>(
+  "getActivities",
+);
 
 function setActivity(activity: Activity | null): void {
   common.fluxDispatcher.dispatch({
@@ -17,7 +18,7 @@ function setActivity(activity: Activity | null): void {
 }
 
 const logger = Logger.plugin("Last.fm RP", "#ba0000");
-let timer: NodeJS.Timer | null;
+let timer: NodeJS.Timeout | null;
 
 async function runTimer(): Promise<void> {
   logger.log("Timer!");

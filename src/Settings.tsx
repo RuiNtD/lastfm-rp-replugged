@@ -1,8 +1,7 @@
-import { common, components, util } from "replugged";
+import { components, util } from "replugged";
 import { cfg } from "./config";
 import { CLIENT_ID, LASTFM_KEY } from "./constants";
 
-const { React } = common;
 const { Divider, Text, TextInput, SwitchItem, FormText } = components;
 
 export function Settings(): React.ReactElement {
