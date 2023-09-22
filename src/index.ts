@@ -44,8 +44,6 @@ function hasOtherActivity(): boolean {
   if (!cfg.get("ignoreIfOtherApps")) return false;
 
   const activities = getActivities();
-  if (!activities) return false;
-
   for (const activity of activities) {
     const appID = activity.application_id;
     if (appID == getClientID()) continue;
@@ -83,11 +81,6 @@ async function getActivity(): Promise<Activity | undefined> {
   } catch (e) {
     logger.error("Failed to get last track");
     logger.error(e);
-    return;
-  }
-
-  if (!track) {
-    logger.log("No tracks found?");
     return;
   }
 
