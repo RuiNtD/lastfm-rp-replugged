@@ -1,13 +1,19 @@
 import { Logger, common, webpack } from "replugged";
 import { OTHER_APP_IDS } from "./constants";
-import { Activity, ActivityAssets, ActivityButton, ActivityFlags, ActivityType } from "./types";
+import {
+  Activity,
+  ActivityAssets,
+  ActivityButton,
+  ActivityFlags,
+  ActivityType,
+} from "./types";
 import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
 import { cfg, getClientID } from "./config";
 import { getAppAsset } from "./assetProvider";
 
-const { getActivities } = await webpack.waitForProps<{ getActivities: () => Activity[] }>(
-  "getActivities",
-);
+const { getActivities } = await webpack.waitForProps<{
+  getActivities: () => Activity[];
+}>("getActivities");
 
 function setActivity(activity: Activity | null): void {
   common.fluxDispatcher.dispatch({
@@ -93,7 +99,8 @@ async function getActivity(): Promise<Activity | undefined> {
   const buttons: ActivityButton[] = [];
   const assets: ActivityAssets = {
     /* eslint-disable @typescript-eslint/naming-convention */
-    large_image: track.image[track.image.length - 1]["#text"] || "placeholdersong",
+    large_image:
+      track.image[track.image.length - 1]["#text"] || "placeholdersong",
     large_text: track.album["#text"],
     small_image: "lastfm",
     small_text: "Scrobbling now",
@@ -109,7 +116,8 @@ async function getActivity(): Promise<Activity | undefined> {
       });
       assets.small_text += ` as ${user.name}`;
 
-      assets.small_image = user.image[user.image.length - 1]["#text"] || "lastfm";
+      assets.small_image =
+        user.image[user.image.length - 1]["#text"] || "lastfm";
     } catch {}
   }
 
@@ -119,8 +127,10 @@ async function getActivity(): Promise<Activity | undefined> {
     url: track.url,
   });
 
-  if (assets.large_image) assets.large_image = await getAppAsset(assets.large_image);
-  if (assets.small_image) assets.small_image = await getAppAsset(assets.small_image);
+  if (assets.large_image)
+    assets.large_image = await getAppAsset(assets.large_image);
+  if (assets.small_image)
+    assets.small_image = await getAppAsset(assets.small_image);
 
   /* eslint-disable @typescript-eslint/naming-convention */
   return {

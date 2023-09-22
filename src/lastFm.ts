@@ -80,7 +80,8 @@ async function sendRequest(params: Record<string, string>): Promise<unknown> {
   const json = await req.json();
 
   const error = LastFMError.safeParse(json);
-  if (error.success) throw new Error(`Error ${error.data.error}: ${error.data.message}`);
+  if (error.success)
+    throw new Error(`Error ${error.data.error}: ${error.data.message}`);
 
   return json;
 }

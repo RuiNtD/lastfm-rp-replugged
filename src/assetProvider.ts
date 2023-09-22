@@ -4,7 +4,9 @@ import { getClientID } from "./config";
 const getAsset: (clientID: string, key: [string]) => Promise<[string]> =
   webpack.getFunctionBySource(
     await webpack.waitForModule(
-      webpack.filters.bySource("getAssetImage: size must === [number, number] for Twitch"),
+      webpack.filters.bySource(
+        "getAssetImage: size must === [number, number] for Twitch",
+      ),
     ),
     "apply(",
   )!;

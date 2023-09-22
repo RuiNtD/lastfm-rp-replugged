@@ -7,7 +7,13 @@ import {
   GatewayActivity,
 } from "discord-api-types/v10";
 
-export { ActivityFlags, ActivityType, ActivityAssets, ActivityButton, ActivityTimestamps };
+export {
+  ActivityFlags,
+  ActivityType,
+  ActivityAssets,
+  ActivityButton,
+  ActivityTimestamps,
+};
 
 export type Activity = Omit<GatewayActivity, "id" | "created_at"> & {
   metadata?: {
