@@ -1,15 +1,16 @@
 import { webpack } from "replugged";
 import { getClientID } from "./config";
 
-const getAsset: (clientID: string, key: [string]) => Promise<[string]> =
-  webpack.getFunctionBySource(
-    await webpack.waitForModule(
-      webpack.filters.bySource(
-        "getAssetImage: size must === [number, number] for Twitch",
-      ),
-    ),
-    "apply(",
-  )!;
+interface AppAssetUtils {
+  fetchAssetIds: (clientID: string, key: [string]) => Promise<string[]>;
+}
+
+async function getAsset(clientID: string, key: [string]): Promise<string[]> {
+  let module = await webpack.waitForModule<AppAssetUtils>(
+    webpack.filters.byProps("fetchAssetIds", "getAssetImage"),
+  );
+  return await module.fetchAssetIds(clientID, key);
+}
 
 let cacheID = "";
 const cache = new Map<string, string>();
