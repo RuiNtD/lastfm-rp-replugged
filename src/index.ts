@@ -94,7 +94,8 @@ async function getActivity(): Promise<Activity | undefined> {
     /* eslint-disable @typescript-eslint/naming-convention */
     large_image:
       track.image[track.image.length - 1]["#text"] || "placeholdersong",
-    large_text: track.album["#text"],
+    // eslint-disable-next-line no-undefined
+    large_text: track.album["#text"] || undefined,
     small_image: "lastfm",
     small_text: "Scrobbling now",
     /* eslint-enable @typescript-eslint/naming-convention */
