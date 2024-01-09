@@ -108,11 +108,17 @@ export type LastFMUser = z.infer<typeof LastFMUser>;
 
 const LastAPIUser = z.object({ user: LastFMUser });
 
+let cachedUser: LastFMUser | undefined;
+
 export async function getUser(user: string): Promise<LastFMUser> {
+  if (cachedUser && cachedUser.name.toLowerCase() == user.toLowerCase())
+    return cachedUser;
+
   const info = await sendRequest({
     method: "user.getinfo",
     user,
   });
 
-  return LastAPIUser.parse(info).user;
+  cachedUser = LastAPIUser.parse(info).user;
+  return cachedUser;
 }
