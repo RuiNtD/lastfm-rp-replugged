@@ -7,7 +7,7 @@ import {
   ActivityFlags,
   ActivityType,
 } from "./types";
-import { LastFMTrack, getLastTrack, getUser } from "./lastFm";
+import { LastFMTrack, LastFMUser, getLastTrack, getUser } from "./lastFm";
 import { cfg, getClientID } from "./config";
 import { getAppAsset } from "./assetProvider";
 
@@ -63,6 +63,14 @@ function templateText(txt: string, track: LastFMTrack): string {
     .replaceAll("{album}", track.album["#text"]);
 }
 
+let CachedUser: LastFMUser | null = null;
+
+async function getCachedUser(username: string): Promise<LastFMUser> {
+  if (CachedUser !== null && CachedUser.name == username) return CachedUser;
+  CachedUser = await getUser(username);
+  return CachedUser;
+}
+
 async function getActivity(): Promise<Activity | undefined> {
   const username = cfg.get("username");
   if (!username) {
@@ -103,7 +111,7 @@ async function getActivity(): Promise<Activity | undefined> {
 
   if (cfg.get("shareUsername")) {
     try {
-      const user = await getUser(username);
+      const user = await getCachedUser(username);
       buttons.push({
         label: "Last.fm Profile",
         url: user.url,
