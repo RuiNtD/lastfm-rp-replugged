@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "lastfm-rp-replugged",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "The Last music rich presence app you'll ever need",
   "engines": {
     "node": ">=18.0.0",

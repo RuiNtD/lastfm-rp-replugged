@@ -7,7 +7,7 @@
     "discordID": "157917665162297344",
     "github": "RuiNtD"
   },
-  "version": "1.0.5",
+  "version": "1.0.6",
   "updater": {
     "type": "store",
     "id": "io.github.ruintd.LastFMRP"
